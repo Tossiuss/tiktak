@@ -1,5 +1,7 @@
-from rest_framework import serializers
-from .models import CustomUser
+from rest_framework import serializers, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model, authenticate
 from .utils import send_activation_code
 
@@ -12,7 +14,8 @@ class RegistrationSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=4, required=True)
     password_confirm = serializers.CharField(min_length=4, required=True)
     name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=False)
+    description = serializers.CharField(min_length=5,required=False)
+
 
     def validate_email(self, email):
         if User.objects.filter(email=email).exists():
@@ -39,6 +42,20 @@ class RegistrationSerializer(serializers.Serializer):
     def to_representation(self, instance):
         return {"message": "Аккаунт успешно создан"}
 
+
+class UserProfile(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        serializer = RegistrationSerializer(data=request.data)
+
+        if serializer.is_valid():
+            request.user.name = serializer.validated_data['name']
+            request.user.save()
+            return Response({'message': 'Ник изменён'}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 class ActivationSerializer(serializers.Serializer):
     email = serializers.CharField()
@@ -144,5 +161,11 @@ class AdminDeleteUserSerializer(serializers.Serializer):
 
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = ['username', 'avatar']
+        model = User
+        fields = ('email', 'name', 'description', 'avatar', 'is_staff')
+
+class UpdateUserSerizlizer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('name', 'description', 'avatar')
+

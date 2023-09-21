@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -15,6 +15,8 @@ from .serializers import (
     ChangePasswordSerializer, 
     DeleteAccountSerializer,
     AdminDeleteUserSerializer,
+    UpdateUserSerizlizer,
+    CustomUserSerializer,
 )
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
@@ -80,7 +82,6 @@ class DeleteAccountView(APIView):
 
 class AdminDeleteUserView(APIView):
     permission_classes = [IsAdminUser]
-    authentication_classes = [SessionAuthentication] 
 
     def post(self, request):
         serializer = AdminDeleteUserSerializer(data=request.data)
@@ -95,15 +96,16 @@ class AdminDeleteUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AvatarUploadView(APIView):
-    parser_class = (FileUploadParser,)
+class UpdateUserView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def put(self, request, format=None):
-        avatar = request.data.get('avatar')
-        if not avatar:
-            return Response({'error': 'Фото не передано'}, status=status.HTTP_400_BAD_REQUEST)
+    def patch(self, request):
+        serializer = UpdateUserSerizlizer(instance=request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
 
-        request.user.avatar = avatar
-        request.user.save()
-        return Response({'message': 'Фото профиля обновлено'}, status=status.HTTP_200_OK)
-    
+
+class ProfileView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer

@@ -29,11 +29,12 @@ class UserManeger(BaseUserManager):
 class User(AbstractBaseUser):
     email = models.EmailField(primary_key=True)
     name = models.CharField(max_length=15)
-    last_name = models.CharField(max_length=40, blank=True)
+    description = models.CharField(max_length=40, blank=True)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=20, blank=True)
-    
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
     objects = UserManeger()
 
     USERNAME_FIELD = 'email'
@@ -57,7 +58,3 @@ class User(AbstractBaseUser):
         cpass = get_random_string(8)
         self.new_cpass = cpass
         self.save()
-
-
-class CustomUser(AbstractUser):
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
