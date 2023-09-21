@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     # apps
     'account',
     'post',
-    'comment',
 ]
 
 CSRF_COOKIE_SECURE = False  
