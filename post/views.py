@@ -3,19 +3,28 @@ from rest_framework import status
 from rest_framework.response import Response
 from .serializers import PostSerializer
 from .models import Posts
-from django.contrib.auth import get_user_model
+from rest_framework import permissions
 
-User = get_user_model()
+
+class IsAuthorOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Разрешение для изменения и удаления только для автора поста
+        return obj.user == request.user
 
 
 class PostView(viewsets.ModelViewSet):
     queryset = Posts.objects.all()
     serializer_class = PostSerializer
+    permission_classes = [IsAuthorOrReadOnly]
     http_method_names = ['get', 'post', 'delete', 'retrieve']
 
     def create(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({"user": ["Пользователь не аутентифицирован"]}, status=status.HTTP_401_UNAUTHORIZED)
+
 
         serializer = PostSerializer(data=request.data, context={'request': request})
 
