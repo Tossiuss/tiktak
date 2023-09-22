@@ -180,9 +180,14 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://158.181.31.212:8000",  
-    "http://127.0.0.1:3000",
+CORS_ALLOWED_ORIGINS = [  
+    "http://34.118.60.99:8000",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://localhost:3003",
+    "http://localhost:3004",
+    "http://localhost:3005",
 ]
 
 CORS_ALLOWED_ORIGINS = [  
