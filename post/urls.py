@@ -1,10 +1,12 @@
-from django.urls import path
-from .views import PostView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import PostViewSet
+
+
+router = DefaultRouter()
+router.register("post", PostViewSet)
 
 urlpatterns = [
-    path('new_post/', PostView.as_view({'post': 'create'})),
-    path('list_post/', PostView.as_view({'get': 'list'})),
-    path('retrieve_post/<int:pk>/', PostView.as_view({'get':'retrieve'})),
-    path('del_post/<int:pk>/', PostView.as_view({'delete': 'destroy'})),
+    path("", include(router.urls)),
 ]
 
