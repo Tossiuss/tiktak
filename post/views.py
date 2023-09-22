@@ -21,5 +21,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action == 'create':
-            return [permissions.IsAuthenticated]
-        return [IsAuthorOrReadOnly]
+            return [permissions.IsAuthenticated()]
+        return [IsAuthorOrReadOnly()]
+    
