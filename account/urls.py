@@ -12,5 +12,7 @@ urlpatterns = [
     path('admin_delete_user/', AdminDeleteUserView.as_view()),
     path('upload_profile/', UpdateUserView.as_view()),
     path('profile/<str:pk>/', ProfileView.as_view()),
+    path('forgot_password/', ForgotPasswordView.as_view()),
+    path('forgot_password/complete/', ForgotPasswordCompleteView.as_view()),
 ]
 

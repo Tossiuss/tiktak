@@ -17,9 +17,12 @@ from .serializers import (
     AdminDeleteUserSerializer,
     UpdateUserSerizlizer,
     CustomUserSerializer,
+    ForgotPassordSerializer,
+    ForgotPasswordCompleteSerializer,
 )
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
+from drf_yasg.utils import swagger_auto_schema
 
 
 User = get_user_model()
@@ -51,6 +54,7 @@ class LogoutView(APIView):
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(request_body=ChangePasswordSerializer())
     def post(self, request):
         serializer = ChangePasswordSerializer(
             data=request.data,
@@ -66,6 +70,7 @@ class ChangePasswordView(APIView):
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(request_body=DeleteAccountSerializer())
     def post(self, request):
         serializer = DeleteAccountSerializer(data=request.data)
         if serializer.is_valid():
@@ -83,22 +88,23 @@ class DeleteAccountView(APIView):
 class AdminDeleteUserView(APIView):
     permission_classes = [IsAdminUser]
 
+    @swagger_auto_schema(request_body=AdminDeleteUserSerializer())
     def post(self, request):
         serializer = AdminDeleteUserSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            try:
-                user = User.objects.get(email=email)
-                user.delete()
-                return Response({'message': f'Пользователь с email {email} успешно удален'}, status=status.HTTP_204_NO_CONTENT)
-            except User.DoesNotExist:
-                return Response({'message': 'Пользователь с указанным email не найден'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+            user.delete()
+            return Response({'message': f'Пользователь с email {email} успешно удален'}, status=status.HTTP_204_NO_CONTENT)
+        except User.DoesNotExist:
+            return Response({'message': 'Пользователь с указанным email не найден'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class UpdateUserView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(request_body=UpdateUserSerizlizer())
     def patch(self, request):
         serializer = UpdateUserSerizlizer(instance=request.user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -109,3 +115,21 @@ class UpdateUserView(APIView):
 class ProfileView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
+
+
+class ForgotPasswordView(APIView):
+    @swagger_auto_schema(request_body=ForgotPassordSerializer())
+    def post(self, request):
+        serializer = ForgotPassordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.send_code()
+        return Response("Проверье почту")
+
+
+class ForgotPasswordCompleteView(APIView):
+    @swagger_auto_schema(request_body=ForgotPasswordCompleteSerializer())
+    def post(self, request):
+        serializer = ForgotPasswordCompleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response("Пароль успешно изменен")

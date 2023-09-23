@@ -24,3 +24,15 @@ def send_password(email, password):
         'test@gmail.com',
         [email]
     )
+
+def send_activation_code_on_forgot_password(email, code):
+    message = f"""
+    {code}
+    """
+
+    send_mail(
+        'Восстановление пароля',
+        message,
+        'test@gmail.com',
+        [email]
+    )

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model, authenticate
-from .utils import send_activation_code
+from .utils import send_activation_code, send_activation_code_on_forgot_password
 
 
 User = get_user_model()
@@ -169,3 +169,40 @@ class UpdateUserSerizlizer(serializers.ModelSerializer):
         model = User
         fields = ('name', 'description', 'avatar')
 
+
+class ForgotPassordSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, email):
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("User with this email does not exists")
+        return email
+    
+    def send_code(self):
+        user = User.objects.get(email=self.validated_data["email"])
+        user.is_active = False
+        user.create_activation_code()
+        send_activation_code_on_forgot_password(user.email, user.activation_code)
+
+
+class ForgotPasswordCompleteSerializer(serializers.Serializer):
+    code = serializers.CharField(required=True)
+    password = serializers.CharField(min_length=4, required=True)
+    password_confirm = serializers.CharField(min_length=4, required=True)
+
+    def validate_code(self, code):
+        if not User.objects.filter(activation_code=code).exists():
+            raise serializers.ValidationError("invalid code")
+        return code
+    
+    def validate(self, attrs):
+        if attrs["password"] != attrs["password_confirm"]:
+            raise serializers.ValidationError("passwords do not match")
+        return attrs
+    
+    def create(self, validated_data):
+        user = User.objects.get(activation_code=validated_data["code"])
+        user.is_active = True
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
