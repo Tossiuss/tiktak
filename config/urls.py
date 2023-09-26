@@ -46,8 +46,8 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0)),
     path('api/v1/account/', include('account.urls')),
     path('api/v1/', include('post.urls')),
-    path('api/v1/', include('comment.urls')),
-    path('api/v1/',include('like.urls')),
+    path('api/v1/',include('rivew.urls')),
+
 ]
 
 if settings.DEBUG:

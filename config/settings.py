@@ -51,8 +51,7 @@ INSTALLED_APPS = [
     # apps
     'account',
     'post',
-    'comment',
-    'like',
+    'rivew',
     'favorite',
 ]
 

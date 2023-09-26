@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Posts
-from comment.serializers import CommentSerializers
-from like.serializers import LikeSerializer
+from rivew.serializers import CommentSerializers
+from rivew.serializers import LikeSerializer
 
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializers(many=True, read_only=True)

@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from .serializers import PostSerializer
 from .models import Posts
 from rest_framework import permissions
-from like.serializers import LikeSerializer
-from like.models import Like
+from rivew.serializers import LikeSerializer
+from rivew.models import Like
 from rest_framework.decorators import action
 
 
