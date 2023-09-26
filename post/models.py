@@ -9,8 +9,3 @@ class Posts(models.Model):
     data_create = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User,on_delete=models.CASCADE,related_name='post')
 
-
-
-# class Tags(models.Model):
-#     post = models.ForeignKey(Posts,related_name='tags')
-#     tag = models.CharField(max_length=10)

@@ -1,12 +1,8 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import PostViewSet
-
-
-router = DefaultRouter()
-router.register("post", PostViewSet)
-
+from django.urls import path
+from .views import PostView,PostCategorySearchView
 urlpatterns = [
-    path("", include(router.urls)),
+    path('api/v1/posts/', PostView.as_view({'post': 'create','get':'list'})),
+    path('api/v1/posts/<int:pk>/', PostView.as_view({'delete': 'destroy','get':'retrieve'})),
+    path('api/v1/posts/search/',PostCategorySearchView.as_view())
 ]
 
