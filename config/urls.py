@@ -47,6 +47,7 @@ urlpatterns = [
     path('api/v1/account/', include('account.urls')),
     path('api/v1/', include('post.urls')),
     path('api/v1/',include('rivew.urls')),
+    path('api/v1/', include('subscriptions.urls')),
 
 ]
 
