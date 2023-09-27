@@ -7,8 +7,8 @@ from rivew.serializers import LikeSerializer
 class PostSerializer(serializers.ModelSerializer):
     comments = CommentSerializers(many=True, read_only=True)
     likes = LikeSerializer(many=True, read_only=True)
-    name = serializers.CharField(source='user.name', read_only=True)  
-    avatar = serializers.CharField(source='user.avatar', read_only=True)  
+    name = serializers.CharField(source='user.name', read_only=True)
+    avatar = serializers.ImageField(source='user.avatar', read_only=True)  
 
     class Meta:
         model = Posts
