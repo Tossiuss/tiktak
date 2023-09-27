@@ -14,5 +14,6 @@ urlpatterns = [
     path('profile/<str:pk>/', ProfileView.as_view()),
     path('forgot_password/', ForgotPasswordView.as_view()),
     path('forgot_password/complete/', ForgotPasswordCompleteView.as_view()),
+    path('follow/', FollowAPIView.as_view()),
 ]
 

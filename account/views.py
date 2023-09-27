@@ -2,9 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.parsers import FileUploadParser
 from rest_framework.authtoken.models import Token
 from .permissions import IsActivePermission
 from rest_framework import status
@@ -19,13 +17,11 @@ from .serializers import (
     CustomUserSerializer,
     ForgotPassordSerializer,
     ForgotPasswordCompleteSerializer,
+    FollowerSerializer,
 )
-from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
 from drf_yasg.utils import swagger_auto_schema
-
-
-User = get_user_model()
+from .models import User, Follower
 
 
 class RegistrationView(CreateAPIView):
@@ -133,3 +129,9 @@ class ForgotPasswordCompleteView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response("Пароль успешно изменен")
+
+
+class FollowAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = FollowerSerializer
+

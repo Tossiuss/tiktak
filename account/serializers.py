@@ -2,11 +2,10 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import authenticate
 from .utils import send_activation_code, send_activation_code_on_forgot_password
-
-
-User = get_user_model()
+from .models import User, Follower
+from django.db.models import F
 
 
 class RegistrationSerializer(serializers.Serializer):
@@ -170,6 +169,34 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('email', 'name', 'description', 'avatar', 'is_staff')
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        try:
+            representation["followers"] = CustomUserSerializer(
+                instance.followers.annotate(
+                    email=F("user__email"), 
+                    name=F("user__name"), 
+                    description=F("user__description"), 
+                    avatar=F("user__avatar"), 
+                    is_staff=F("user__is_staff")
+                ), 
+                many=True
+            ).data
+            representation["follows"] = CustomUserSerializer(
+                instance.follows.annotate(
+                    email=F("follow__email"), 
+                    name=F("follow__name"), 
+                    description=F("follow__description"), 
+                    avatar=F("follow__avatar"), 
+                    is_staff=F("follow__is_staff")
+                ), 
+                many=True
+            ).data
+        except AttributeError:
+            pass
+        return representation
+
 
 class UpdateUserSerizlizer(serializers.ModelSerializer):
     class Meta:
@@ -212,4 +239,22 @@ class ForgotPasswordCompleteSerializer(serializers.Serializer):
         user.is_active = True
         user.set_password(validated_data["password"])
         user.save()
+        return user
+
+
+class FollowerSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+    def validate_email(self, email):
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("User with this email does not exists")
+        return email
+    
+    def create(self, validated_data):
+        follower = User.objects.get(email=validated_data["email"])
+        user = self.context["request"].user
+        if Follower.objects.filter(user=user, follow=follower).exists():
+            Follower.objects.filter(user=user, follow=follower).delete()
+        else:
+            Follower.objects.create(user=user, follow=follower)
         return user

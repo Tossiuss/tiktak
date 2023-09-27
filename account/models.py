@@ -58,3 +58,11 @@ class User(AbstractBaseUser):
         cpass = get_random_string(8)
         self.new_cpass = cpass
         self.save()
+
+
+class Follower(models.Model):
+    user = models.ForeignKey(User, related_name="follows", on_delete=models.CASCADE)
+    follow = models.ForeignKey(User, related_name="followers", on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.user} -> {self.follow}"
