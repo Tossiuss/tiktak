@@ -20,9 +20,16 @@ class RegistrationSerializer(serializers.Serializer):
     def validate_email(self, email):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
-                'Пользователь с таким email уже зарегистрирован'
+                'Эта почта уже зарегистрированна'
             )
         return email
+    
+    def validate_name(self, name):
+        if User.objects.filter(name=name).exists():
+            raise serializers.ValidationError(
+                'Данный ник принадлежит другому пользователю'
+            )
+        return name
 
     def validate(self, attrs):
         password = attrs.get('password')
