@@ -60,9 +60,9 @@ class User(AbstractBaseUser):
         self.save()
 
 
-class Follower(models.Model):
-    user = models.ForeignKey(User, related_name="follows", on_delete=models.CASCADE)
-    follow = models.ForeignKey(User, related_name="followers", on_delete=models.CASCADE)
+# class Follower(models.Model):
+#     user = models.ForeignKey(User, related_name="follows", on_delete=models.CASCADE)
+#     follow = models.ForeignKey(User, related_name="followers", on_delete=models.CASCADE)
 
-    def __str__(self) -> str:
-        return f"{self.user} -> {self.follow}"
+#     def __str__(self) -> str:
+#         return f"{self.user} -> {self.follow}"

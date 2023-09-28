@@ -17,11 +17,10 @@ from .serializers import (
     CustomUserSerializer,
     ForgotPassordSerializer,
     ForgotPasswordCompleteSerializer,
-    FollowerSerializer,
 )
 from django.contrib.auth import authenticate
 from drf_yasg.utils import swagger_auto_schema
-from .models import User, Follower
+from .models import User
 
 
 class RegistrationView(CreateAPIView):
@@ -131,7 +130,7 @@ class ForgotPasswordCompleteView(APIView):
         return Response("Пароль успешно изменен")
 
 
-class FollowAPIView(CreateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = FollowerSerializer
+# class FollowAPIView(CreateAPIView):
+#     permission_classes = [IsAuthenticated]
+#     serializer_class = FollowerSerializer
 
