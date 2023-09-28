@@ -52,7 +52,7 @@ class PostView(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['get'])
     def likes(self, request, pk=None):
-        post = self.get_object()  # Получаем объект поста по переданному pk
+        post = self.get_object()  
         likes = Like.objects.filter(post=post)
         serializer = LikeSerializer(likes, many=True)
         return Response(serializer.data)
