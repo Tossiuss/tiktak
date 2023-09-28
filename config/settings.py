@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'post',
     'rivew',
     'favorite',
-    'subscriptions',
 ]
 
 CSRF_COOKIE_SECURE = False  
